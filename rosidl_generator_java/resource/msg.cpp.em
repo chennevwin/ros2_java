@@ -516,6 +516,20 @@ if value_method:
     assert(_j@(normalized_type)_to_java_function != nullptr);
 @[  end if]@
 @[end for]@
+
+    JNINativeMethod moduleMethods[] = 
+    {
+      {"getFromJavaConverter", "()J", reinterpret_cast<void *> (Java_@(underscore_separated_jni_type_name)_getFromJavaConverter)},
+      {"getToJavaConverter", "()J", reinterpret_cast<void *> (Java_@(underscore_separated_jni_type_name)_getToJavaConverter)},
+      {"getTypeSupport", "()J", reinterpret_cast<void *> (Java_@(underscore_separated_jni_type_name)_getTypeSupport)},
+      {"getDestructor", "()J", reinterpret_cast<void *> (Java_@(underscore_separated_jni_type_name)_getDestructor)},
+    };
+    auto _class_local = env->FindClass("@(msg_jni_type)");
+    if ((env->RegisterNatives(_class_local, moduleMethods, sizeof(moduleMethods)/sizeof(JNINativeMethod)) < 0)) 
+    {
+      return JNI_ERR;
+    } 
+      env->DeleteLocalRef(_class_local);
   }
   return JNI_VERSION_1_6;
 }
